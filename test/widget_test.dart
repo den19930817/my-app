@@ -21,7 +21,10 @@ void main() {
     await tester.tap(find.widgetWithText(FilledButton, 'Добавить'));
     await tester.pumpAndSettle();
     expect(find.text('Введите название'), findsOneWidget);
-    Finder field(String key) => find.descendant(of: find.byType(AddExerciseDialog), matching: find.byKey(ValueKey(key)));
+    Finder field(String key) => find.descendant(
+      of: find.byType(AddExerciseDialog),
+      matching: find.byKey(ValueKey(key)),
+    );
     await tester.enterText(field('exercise-name'), 'Тестовое упражнение');
     for (var i = 0; i < 3; i++) {
       await tester.ensureVisible(field('set-reps-$i'));
@@ -36,52 +39,108 @@ void main() {
     expect(saved.getString('training-plan-flutter-v1'), contains('50'));
     expect(tester.takeException(), isNull);
   });
-  testWidgets('Twenty set rows, count changes preserve drafts, and each row is saved', (tester) async {
-    Exercise? added;
-    await tester.pumpWidget(MaterialApp(home: Scaffold(body: Builder(builder: (context) => TextButton(
-      onPressed: () async { added = await showDialog<Exercise>(context: context, builder: (_) => const AddExerciseDialog()); },
-      child: const Text('Открыть'),
-    )))));
-    await tester.tap(find.text('Открыть'));
-    await tester.pumpAndSettle();
-    Future<void> selectCount(int count) async {
-      final dropdown = find.byKey(const ValueKey('set-count'));
-      await tester.ensureVisible(dropdown);
-      final current = tester.widget<DropdownButtonFormField<int>>(dropdown).initialValue!;
-      await tester.tap(dropdown);
+  testWidgets(
+    'Twenty set rows, count changes preserve drafts, and each row is saved',
+    (tester) async {
+      Exercise? added;
+      await tester.pumpWidget(
+        MaterialApp(
+          home: Scaffold(
+            body: Builder(
+              builder: (context) => TextButton(
+                onPressed: () async {
+                  added = await showDialog<Exercise>(
+                    context: context,
+                    builder: (_) => const AddExerciseDialog(),
+                  );
+                },
+                child: const Text('Открыть'),
+              ),
+            ),
+          ),
+        ),
+      );
+      await tester.tap(find.text('Открыть'));
       await tester.pumpAndSettle();
-      final option = find.text('$count').last;
-      await tester.scrollUntilVisible(option, count < current ? -160 : 160, scrollable: find.byType(Scrollable).last);
-      await tester.tap(option);
+      Future<void> selectCount(int count) async {
+        final dropdown = find.byKey(const ValueKey('set-count'));
+        await tester.ensureVisible(dropdown);
+        final current = tester.widget<DropdownButtonFormField<int>>(dropdown).initialValue!;
+        await tester.tap(dropdown);
+        await tester.pumpAndSettle();
+        final menu = find.byType(Scrollable).last;
+        final option = find.descendant(of: menu, matching: find.text('$count'));
+        await tester.scrollUntilVisible(
+          option,
+          count < current ? -160 : 160,
+          scrollable: menu,
+        );
+        await tester.tap(option);
+        await tester.pumpAndSettle();
+      }
+
+      await tester.enterText(
+        find.byKey(const ValueKey('exercise-name')),
+        'Жим',
+      );
+      await selectCount(20);
+      expect(find.byType(SetFields), findsNWidgets(20));
+      for (var i = 0; i < 20; i++) {
+        final reps = find.byKey(ValueKey('set-reps-$i'));
+        final weight = find.byKey(ValueKey('set-weight-$i'));
+        await tester.ensureVisible(reps);
+        await tester.enterText(reps, '${i + 1}');
+        await tester.enterText(weight, '${i + 20},5');
+      }
+      await selectCount(1);
+      expect(find.byType(SetFields), findsOneWidget);
+      await selectCount(20);
+      expect(
+        tester
+            .widget<TextFormField>(find.byKey(const ValueKey('set-reps-19')))
+            .controller!
+            .text,
+        '20',
+      );
+      await tester.tap(find.widgetWithText(FilledButton, 'Добавить'));
       await tester.pumpAndSettle();
-    }
-    await tester.enterText(find.byKey(const ValueKey('exercise-name')), 'Жим');
-    await selectCount(20);
-    expect(find.byType(SetFields), findsNWidgets(20));
-    for (var i = 0; i < 20; i++) {
-      final reps = find.byKey(ValueKey('set-reps-$i'));
-      final weight = find.byKey(ValueKey('set-weight-$i'));
-      await tester.ensureVisible(reps);
-      await tester.enterText(reps, '${i + 1}');
-      await tester.enterText(weight, '${i + 20},5');
-    }
-    await selectCount(1);
-    expect(find.byType(SetFields), findsOneWidget);
-    await selectCount(20);
-    expect(tester.widget<TextFormField>(find.byKey(const ValueKey('set-reps-19'))).controller!.text, '20');
-    await tester.tap(find.widgetWithText(FilledButton, 'Добавить'));
-    await tester.pumpAndSettle();
-    expect(added!.sets, 20);
-    for (var i = 0; i < 20; i++) {
-      expect(added!.setDetails[i].reps, '${i + 1}');
-      expect(added!.setDetails[i].weight, '${i + 20},5');
-    }
-    expect(tester.takeException(), isNull);
-  });
-  testWidgets('Existing exercise fields edit only their own set', (tester) async {
-    final exercise = Exercise(name: 'Тяга', sets: 2, reps: '', setDetails: [ExerciseSet(reps: '12', weight: '40'), ExerciseSet(reps: '8', weight: '50')]);
+      expect(added!.sets, 20);
+      for (var i = 0; i < 20; i++) {
+        expect(added!.setDetails[i].reps, '${i + 1}');
+        expect(added!.setDetails[i].weight, '${i + 20},5');
+      }
+      expect(tester.takeException(), isNull);
+    },
+  );
+  testWidgets('Existing exercise fields edit only their own set', (
+    tester,
+  ) async {
+    final exercise = Exercise(
+      name: 'Тяга',
+      sets: 2,
+      reps: '',
+      setDetails: [
+        ExerciseSet(reps: '12', weight: '40'),
+        ExerciseSet(reps: '8', weight: '50'),
+      ],
+    );
     var edits = 0;
-    await tester.pumpWidget(MaterialApp(home: Scaffold(body: SingleChildScrollView(child: ExerciseTile(exercise: exercise, onDone: (_) {}, onEdit: () { edits++; }, onDelete: () {})))));
+    await tester.pumpWidget(
+      MaterialApp(
+        home: Scaffold(
+          body: SingleChildScrollView(
+            child: ExerciseTile(
+              exercise: exercise,
+              onDone: (_) {},
+              onEdit: () {
+                edits++;
+              },
+              onDelete: () {},
+            ),
+          ),
+        ),
+      ),
+    );
     await tester.enterText(find.byKey(const ValueKey('set-reps-1')), '6');
     await tester.enterText(find.byKey(const ValueKey('set-weight-1')), '55.5');
     expect(exercise.setDetails[0].reps, '12');

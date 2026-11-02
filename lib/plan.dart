@@ -20,7 +20,10 @@ class ExerciseSet {
     if (json['reps'] is! String || json['weight'] is! String) {
       throw const FormatException('Некорректный подход');
     }
-    return ExerciseSet(reps: json['reps'] as String, weight: json['weight'] as String);
+    return ExerciseSet(
+      reps: json['reps'] as String,
+      weight: json['weight'] as String,
+    );
   }
   Map<String, dynamic> toJson() => {'reps': reps, 'weight': weight};
 }
@@ -34,10 +37,15 @@ class Exercise {
     this.weight = '',
     this.result = '',
     List<ExerciseSet>? setDetails,
-  }) : setDetails = setDetails ?? List.generate(sets, (i) => ExerciseSet(
-    reps: _legacyValue(result.isEmpty ? reps : result, i, sets),
-    weight: _legacyValue(weight, i, sets),
-  ));
+  }) : setDetails =
+           setDetails ??
+           List.generate(
+             sets,
+             (i) => ExerciseSet(
+               reps: _legacyValue(result.isEmpty ? reps : result, i, sets),
+               weight: _legacyValue(weight, i, sets),
+             ),
+           );
   final String name;
   final String reps;
   bool done;
