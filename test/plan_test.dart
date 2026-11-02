@@ -38,18 +38,27 @@ void main() {
     expect(plan.encode(), before);
   });
   test('Reads previous JavaScript schema and preserves all data on roundtrip', () {
-    const old = '[[{"name":"Тяга","sets":4,"reps":"10","done":true,"weight":"50","result":"10/10/8/8"}],[],[],[],[],[],[]]';
+    const old =
+        '[[{"name":"Тяга","sets":4,"reps":"10","done":true,"weight":"50","result":"10/10/8/8"}],[],[],[],[],[],[]]';
     final plan = TrainingPlan.decode(old);
-    expect(TrainingPlan.decode(plan.encode()).days[0].first.toJson(), plan.days[0].first.toJson());
+    expect(
+      TrainingPlan.decode(plan.encode()).days[0].first.toJson(),
+      plan.days[0].first.toJson(),
+    );
     expect(plan.days[0].first.sets, 4);
     expect(plan.days[0].first.weight, '50');
     expect(plan.days[0].first.done, isTrue);
-    final minimal = TrainingPlan.decode('[[{"name":"Планка","sets":3,"reps":"30 сек","done":false}],[],[],[],[],[],[]]');
+    final minimal = TrainingPlan.decode(
+      '[[{"name":"Планка","sets":3,"reps":"30 сек","done":false}],[],[],[],[],[],[]]',
+    );
     expect(minimal.days[0].first.weight, '');
   });
   test('Rejects corrupt saved data', () {
     expect(() => TrainingPlan.decode('{}'), throwsFormatException);
-    expect(() => TrainingPlan.decode('[[],[],[],[],[],[],[{}]]'), throwsFormatException);
+    expect(
+      () => TrainingPlan.decode('[[],[],[],[],[],[],[{}]]'),
+      throwsFormatException,
+    );
   });
   test('Today and yesterday wrap at Monday in local calendar', () {
     expect(dayIndex(DateTime(2026, 11, 2)), 0);

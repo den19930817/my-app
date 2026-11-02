@@ -11,7 +11,8 @@ class LoadedPlan {
 }
 
 class PlanStorage {
-  PlanStorage({String? Function()? legacyReader}) : _legacyReader = legacyReader ?? readLegacyPlan;
+  PlanStorage({String? Function()? legacyReader})
+    : _legacyReader = legacyReader ?? readLegacyPlan;
   final String? Function() _legacyReader;
   Future<LoadedPlan> load() async {
     try {
@@ -22,11 +23,19 @@ class PlanStorage {
       if (legacy != null) {
         final plan = TrainingPlan.decode(legacy);
         final saved = await prefs.setString(storageKey, plan.encode());
-        return LoadedPlan(plan, saved ? 'Ваш прежний план перенесён в Flutter.' : 'Прежний план открыт, но браузер не разрешил его сохранить.');
+        return LoadedPlan(
+          plan,
+          saved
+              ? 'Ваш прежний план перенесён в Flutter.'
+              : 'Прежний план открыт, но браузер не разрешил его сохранить.',
+        );
       }
       return LoadedPlan(TrainingPlan.sample());
     } catch (_) {
-      return LoadedPlan(TrainingPlan.sample(), 'Не удалось прочитать сохранённый план. Показан пример. Исходные данные не удалены.');
+      return LoadedPlan(
+        TrainingPlan.sample(),
+        'Не удалось прочитать сохранённый план. Показан пример. Исходные данные не удалены.',
+      );
     }
   }
 
@@ -36,9 +45,14 @@ class PlanStorage {
     final value = plan.encode();
     final operation = _pending.then((_) async {
       final prefs = await SharedPreferences.getInstance();
-      if (!await prefs.setString(storageKey, value)) throw StateError('Сохранение отклонено');
+      if (!await prefs.setString(storageKey, value)) {
+        throw StateError('Сохранение отклонено');
+      }
     });
-    _pending = operation.then<void>((_) {}, onError: (Object _, StackTrace _) {});
+    _pending = operation.then<void>(
+      (_) {},
+      onError: (Object _, StackTrace _) {},
+    );
     return operation;
   }
 }
