@@ -38,7 +38,7 @@ class PlanStorage {
       final prefs = await SharedPreferences.getInstance();
       if (!await prefs.setString(storageKey, value)) throw StateError('Сохранение отклонено');
     });
-    _pending = operation.then<void>((_) {}, onError: (Object _, StackTrace __) {});
+    _pending = operation.then<void>((_) {}, onError: (Object _, StackTrace _) {});
     return operation;
   }
 }
