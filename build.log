@@ -1,11 +1,11 @@
-Downloading Material fonts...                                      172ms
-Downloading Gradle Wrapper...                                        9ms
-Downloading package sky_engine...                                   61ms
-Downloading package flutter_gpu...                                   6ms
-Downloading flutter_patched_sdk tools...                           146ms
-Downloading flutter_patched_sdk_product tools...                   139ms
-Downloading linux-x64 tools...                                     832ms
-Downloading linux-x64/font-subset tools...                          89ms
+Downloading Material fonts...                                      333ms
+Downloading Gradle Wrapper...                                       27ms
+Downloading package sky_engine...                                  161ms
+Downloading package flutter_gpu...                                  79ms
+Downloading flutter_patched_sdk tools...                           273ms
+Downloading flutter_patched_sdk_product tools...                   241ms
+Downloading linux-x64 tools...                                   1,119ms
+Downloading linux-x64/font-subset tools...                         149ms
 Resolving dependencies...
 Downloading packages...
 + async 2.13.1
@@ -62,7 +62,7 @@ Formatted lib/plan.dart
 Formatted lib/storage.dart
 Formatted test/plan_test.dart
 Formatted test/widget_test.dart
-Formatted 9 files (6 changed) in 0.40 seconds.
+Formatted 9 files (6 changed) in 0.54 seconds.
 Analyzing my-app...                                             
 
    info • Statements in an if should be enclosed in a block • lib/main.dart:68:7 • curly_braces_in_flow_control_structures
@@ -73,6 +73,5 @@ Analyzing my-app...
    info • Statements in an if should be enclosed in a block • lib/plan.dart:76:13 • curly_braces_in_flow_control_structures
    info • Statements in an if should be enclosed in a block • lib/plan.dart:115:7 • curly_braces_in_flow_control_structures
    info • Statements in an if should be enclosed in a block • lib/storage.dart:49:9 • curly_braces_in_flow_control_structures
-   info • Unnecessary use of multiple underscores • lib/storage.dart:53:38 • unnecessary_underscores
 
-9 issues found. (ran in 9.5s)
+8 issues found. (ran in 11.2s)

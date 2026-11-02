@@ -20,11 +20,12 @@ void main() {
     await tester.tap(find.widgetWithText(FilledButton, 'Добавить'));
     await tester.pumpAndSettle();
     expect(find.text('Введите название'), findsOneWidget);
-    await tester.enterText(
-      find.byType(TextFormField).at(0),
-      'Тестовое упражнение',
+    final fields = find.descendant(
+      of: find.byType(AddExerciseDialog),
+      matching: find.byType(TextFormField),
     );
-    await tester.enterText(find.byType(TextFormField).at(2), '12 повторений');
+    await tester.enterText(fields.at(0), 'Тестовое упражнение');
+    await tester.enterText(fields.at(2), '12 повторений');
     await tester.tap(find.widgetWithText(FilledButton, 'Добавить'));
     await tester.pumpAndSettle();
     expect(find.text('Тестовое упражнение'), findsOneWidget);
