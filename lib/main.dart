@@ -22,6 +22,7 @@ class TrainingApp extends StatelessWidget {
     localizationsDelegates: GlobalMaterialLocalizations.delegates,
     theme: ThemeData(
       useMaterial3: true,
+      fontFamily: 'Roboto',
       scaffoldBackgroundColor: paper,
       colorScheme: ColorScheme.fromSeed(
         seedColor: forest,
