@@ -513,15 +513,37 @@ class ExerciseTile extends StatelessWidget {
               borderRadius: BorderRadius.circular(8),
               child: Padding(
                 padding: const EdgeInsets.symmetric(vertical: 12),
-                child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-                  Row(children: [
-                    Flexible(child: Text(exercise.name, style: TextStyle(fontWeight: FontWeight.bold, decoration: exercise.done ? TextDecoration.lineThrough : null))),
-                    const SizedBox(width: 6),
-                    const Icon(Icons.edit_outlined, size: 16, color: forest),
-                  ]),
-                  const SizedBox(height: 5),
-                  Text('Подходов: ${exercise.sets}', style: const TextStyle(fontSize: 13, color: Colors.grey)),
-                ]),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Row(
+                      children: [
+                        Flexible(
+                          child: Text(
+                            exercise.name,
+                            style: TextStyle(
+                              fontWeight: FontWeight.bold,
+                              decoration: exercise.done
+                                  ? TextDecoration.lineThrough
+                                  : null,
+                            ),
+                          ),
+                        ),
+                        const SizedBox(width: 6),
+                        const Icon(
+                          Icons.edit_outlined,
+                          size: 16,
+                          color: forest,
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 5),
+                    Text(
+                      'Подходов: ${exercise.sets}',
+                      style: const TextStyle(fontSize: 13, color: Colors.grey),
+                    ),
+                  ],
+                ),
               ),
             ),
           ),
@@ -542,9 +564,15 @@ class ExerciseTile extends StatelessWidget {
             children: [
               TextButton.icon(
                 onPressed: onEditSet == null ? null : () => onEditSet!(i),
-                style: TextButton.styleFrom(padding: EdgeInsets.zero, alignment: Alignment.centerLeft),
+                style: TextButton.styleFrom(
+                  padding: EdgeInsets.zero,
+                  alignment: Alignment.centerLeft,
+                ),
                 icon: const Icon(Icons.edit_outlined, size: 16),
-                label: Text('Подход ${i + 1}', style: const TextStyle(fontWeight: FontWeight.w600)),
+                label: Text(
+                  'Подход ${i + 1}',
+                  style: const TextStyle(fontWeight: FontWeight.w600),
+                ),
               ),
               const SizedBox(height: 10),
               SetFields(
@@ -655,9 +683,24 @@ class _AddExerciseDialogState extends State<AddExerciseDialog> {
     _name = TextEditingController(text: exercise?.name ?? '');
     _count = exercise?.sets ?? 3;
     final capacity = _count > 20 ? _count : 20;
-    _reps = List.generate(capacity, (i) => TextEditingController(text: exercise != null && i < exercise.sets ? exercise.setDetails[i].reps : ''));
-    _weights = List.generate(capacity, (i) => TextEditingController(text: exercise != null && i < exercise.sets ? exercise.setDetails[i].weight : ''));
+    _reps = List.generate(
+      capacity,
+      (i) => TextEditingController(
+        text: exercise != null && i < exercise.sets
+            ? exercise.setDetails[i].reps
+            : '',
+      ),
+    );
+    _weights = List.generate(
+      capacity,
+      (i) => TextEditingController(
+        text: exercise != null && i < exercise.sets
+            ? exercise.setDetails[i].weight
+            : '',
+      ),
+    );
   }
+
   @override
   void dispose() {
     _name.dispose();
@@ -669,7 +712,13 @@ class _AddExerciseDialogState extends State<AddExerciseDialog> {
 
   @override
   Widget build(BuildContext context) => AlertDialog(
-    title: Text(widget.exercise == null ? 'Новое упражнение' : widget.setIndex == null ? 'Изменить упражнение' : 'Подход ${widget.setIndex! + 1}'),
+    title: Text(
+      widget.exercise == null
+          ? 'Новое упражнение'
+          : widget.setIndex == null
+          ? 'Изменить упражнение'
+          : 'Подход ${widget.setIndex! + 1}',
+    ),
     content: SizedBox(
       width: 460,
       child: SingleChildScrollView(
@@ -680,34 +729,48 @@ class _AddExerciseDialogState extends State<AddExerciseDialog> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               if (widget.setIndex == null) ...[
-              TextFormField(
-                key: const ValueKey('exercise-name'),
-                controller: _name,
-                autofocus: true,
-                maxLength: 100,
-                decoration: const InputDecoration(labelText: 'Название'),
-                validator: (value) => value == null || value.trim().isEmpty
-                    ? 'Введите название'
-                    : null,
-              ),
-              const SizedBox(height: 12),
-              DropdownButtonFormField<int>(
-                key: const ValueKey('set-count'),
-                menuMaxHeight: 320,
-                initialValue: _count,
-                isExpanded: true,
-                decoration: const InputDecoration(
-                  labelText: 'Количество подходов',
+                TextFormField(
+                  key: const ValueKey('exercise-name'),
+                  controller: _name,
+                  autofocus: true,
+                  maxLength: 100,
+                  decoration: const InputDecoration(labelText: 'Название'),
+                  validator: (value) => value == null || value.trim().isEmpty
+                      ? 'Введите название'
+                      : null,
                 ),
-                items: [
-                  ...List.generate(20, (i) => DropdownMenuItem(value: i + 1, child: Text('${i + 1}'))),
-                  if ((widget.exercise?.sets ?? 0) > 20) DropdownMenuItem(value: widget.exercise!.sets, child: Text('${widget.exercise!.sets}')),
-                ],
-                onChanged: (value) => setState(() => _count = value ?? _count),
-              ),
+                const SizedBox(height: 12),
+                DropdownButtonFormField<int>(
+                  key: const ValueKey('set-count'),
+                  menuMaxHeight: 320,
+                  initialValue: _count,
+                  isExpanded: true,
+                  decoration: const InputDecoration(
+                    labelText: 'Количество подходов',
+                  ),
+                  items: [
+                    ...List.generate(
+                      20,
+                      (i) => DropdownMenuItem(
+                        value: i + 1,
+                        child: Text('${i + 1}'),
+                      ),
+                    ),
+                    if ((widget.exercise?.sets ?? 0) > 20)
+                      DropdownMenuItem(
+                        value: widget.exercise!.sets,
+                        child: Text('${widget.exercise!.sets}'),
+                      ),
+                  ],
+                  onChanged: (value) =>
+                      setState(() => _count = value ?? _count),
+                ),
               ],
               const SizedBox(height: 20),
-              ...[for (var i = 0; i < _count; i++) if (widget.setIndex == null || widget.setIndex == i) i].map(
+              ...[
+                for (var i = 0; i < _count; i++)
+                  if (widget.setIndex == null || widget.setIndex == i) i,
+              ].map(
                 (i) => Padding(
                   padding: const EdgeInsets.only(bottom: 20),
                   child: Column(
