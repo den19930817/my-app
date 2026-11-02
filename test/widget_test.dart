@@ -4,6 +4,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:training_plan/main.dart';
 import 'package:training_plan/plan.dart';
+import 'package:training_plan/storage.dart';
 
 void main() {
   testWidgets('Mobile planner opens, validates input and adds an exercise', (
@@ -36,8 +37,8 @@ void main() {
     await tester.pumpAndSettle();
     expect(find.text('Тестовое упражнение'), findsOneWidget);
     final saved = await SharedPreferences.getInstance();
-    expect(saved.getString('training-plan-flutter-v1'), contains('setDetails'));
-    expect(saved.getString('training-plan-flutter-v1'), contains('50'));
+    expect(saved.getString(storageKey), contains('setDetails'));
+    expect(saved.getString(storageKey), contains('50'));
     expect(tester.takeException(), isNull);
   });
   testWidgets(

@@ -17,6 +17,19 @@ void main() {
     final reopened = await storage.load();
     expect(reopened.plan.days[0].first.weight, '85');
   });
+  test('Migrates the latest Flutter plan before old JavaScript data and keeps original', () async {
+    final prefs = await SharedPreferences.getInstance();
+    final original = TrainingPlan.sample();
+    original.days[0].first.setDetails[0].weight = '75';
+    await prefs.setString(previousStorageKey, original.encode());
+    final storage = PlanStorage(legacyReader: () => throw StateError('Stale JavaScript data must not be read'));
+    final loaded = await storage.load();
+    expect(loaded.plan.days[0].first.setDetails[0].weight, '75');
+    loaded.plan.days[0].first.setDetails[0].weight = '80';
+    await storage.save(loaded.plan);
+    expect(TrainingPlan.decode(prefs.getString(previousStorageKey)!).days[0].first.setDetails[0].weight, '75');
+    expect((await storage.load()).plan.days[0].first.setDetails[0].weight, '80');
+  });
   test('Queued saves persist the latest edit', () async {
     final storage = PlanStorage(legacyReader: () => null);
     final plan = TrainingPlan.sample();

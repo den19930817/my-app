@@ -2,7 +2,8 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'legacy_storage.dart';
 import 'plan.dart';
 
-const storageKey = 'training-plan-flutter-v1';
+const storageKey = 'training-plan-flutter-v2';
+const previousStorageKey = 'training-plan-flutter-v1';
 
 class LoadedPlan {
   LoadedPlan(this.plan, [this.warning = '']);
@@ -19,14 +20,14 @@ class PlanStorage {
       final prefs = await SharedPreferences.getInstance();
       final current = prefs.getString(storageKey);
       if (current != null) return LoadedPlan(TrainingPlan.decode(current));
-      final legacy = _legacyReader();
+      final legacy = prefs.getString(previousStorageKey) ?? _legacyReader();
       if (legacy != null) {
         final plan = TrainingPlan.decode(legacy);
         final saved = await prefs.setString(storageKey, plan.encode());
         return LoadedPlan(
           plan,
           saved
-              ? 'Ваш прежний план перенесён в Flutter.'
+              ? 'Ваш план обновлён: повторения и вес теперь отдельно для каждого подхода.'
               : 'Прежний план открыт, но браузер не разрешил его сохранить.',
         );
       }
