@@ -1,11 +1,11 @@
-Downloading Material fonts...                                      282ms
-Downloading Gradle Wrapper...                                        9ms
-Downloading package sky_engine...                                  167ms
-Downloading package flutter_gpu...                                  42ms
-Downloading flutter_patched_sdk tools...                           233ms
-Downloading flutter_patched_sdk_product tools...                   253ms
-Downloading linux-x64 tools...                                   1,138ms
-Downloading linux-x64/font-subset tools...                         180ms
+Downloading Material fonts...                                      250ms
+Downloading Gradle Wrapper...                                       24ms
+Downloading package sky_engine...                                   60ms
+Downloading package flutter_gpu...                                  24ms
+Downloading flutter_patched_sdk tools...                           114ms
+Downloading flutter_patched_sdk_product tools...                   102ms
+Downloading linux-x64 tools...                                     585ms
+Downloading linux-x64/font-subset tools...                          61ms
 Resolving dependencies...
 Downloading packages...
   characters 1.4.0 (1.4.1 available)
@@ -27,8 +27,9 @@ Downloading packages...
 Got dependencies!
 16 packages have newer versions incompatible with dependency constraints.
 Try `flutter pub outdated` for more information.
+Formatted test/storage_test.dart
 Formatted test/widget_test.dart
-Formatted 9 files (1 changed) in 0.67 seconds.
+Formatted 9 files (2 changed) in 0.30 seconds.
 Resolving dependencies...
 Downloading packages...
   characters 1.4.0 (1.4.1 available)
@@ -51,7 +52,7 @@ Got dependencies!
 16 packages have newer versions incompatible with dependency constraints.
 Try `flutter pub outdated` for more information.
 Analyzing my-app...                                             
-No issues found! (ran in 13.7s)
+No issues found! (ran in 7.5s)
 Resolving dependencies...
 Downloading packages...
   characters 1.4.0 (1.4.1 available)
@@ -85,6 +86,7 @@ Try `flutter pub outdated` for more information.
 ✅ /home/runner/work/my-app/my-app/test/plan_test.dart: Rejects corrupt saved data
 ✅ /home/runner/work/my-app/my-app/test/plan_test.dart: Today and yesterday wrap at Monday in local calendar
 ✅ /home/runner/work/my-app/my-app/test/storage_test.dart: Imports legacy plan once, then prefers the Flutter version
+✅ /home/runner/work/my-app/my-app/test/storage_test.dart: Migrates the latest Flutter plan before old JavaScript data and keeps original
 ✅ /home/runner/work/my-app/my-app/test/storage_test.dart: Queued saves persist the latest edit
 ✅ /home/runner/work/my-app/my-app/test/storage_test.dart: Corrupt legacy data is not imported or overwritten
 ✅ /home/runner/work/my-app/my-app/test/widget_test.dart: Mobile planner opens, validates input and adds an exercise
@@ -92,8 +94,8 @@ Try `flutter pub outdated` for more information.
 ✅ /home/runner/work/my-app/my-app/test/widget_test.dart: Existing exercise fields edit only their own set
 ✅ /home/runner/work/my-app/my-app/test/widget_test.dart: Transfer dialog supports copy mode and cancellation
 
-🎉 17 tests passed.
-Downloading Web SDK...                                           1,377ms
+🎉 18 tests passed.
+Downloading Web SDK...                                             831ms
 Resolving dependencies...
 Downloading packages...
   characters 1.4.0 (1.4.1 available)
@@ -116,3 +118,9 @@ Got dependencies!
 16 packages have newer versions incompatible with dependency constraints.
 Try `flutter pub outdated` for more information.
 Compiling lib/main.dart for the Web...                          
+Wasm dry run succeeded. Consider building and testing your application with the `--wasm` flag. See docs for more info: https://docs.flutter.dev/platform-integration/web/wasm
+Use --no-wasm-dry-run to disable these warnings.
+Expected to find fonts for (MaterialIcons, packages/cupertino_icons/CupertinoIcons), but found (MaterialIcons). This usually means you are referring to font families in an IconData class but not including them in the assets section of your pubspec.yaml, are missing the package that would include them, or are missing "uses-material-design: true".
+Font asset "MaterialIcons-Regular.otf" was tree-shaken, reducing it from 1645184 to 8172 bytes (99.5% reduction). Tree-shaking can be disabled by providing the --no-tree-shake-icons flag when building your app.
+Compiling lib/main.dart for the Web...                             20.7s
+✓ Built build/web
