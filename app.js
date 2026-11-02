@@ -13,11 +13,13 @@ try {
   const saved = localStorage.getItem(key);
   if (saved) {
     const data = JSON.parse(saved);
-    if (!Array.isArray(data) || data.length !== 7 || !data.every(day => Array.isArray(day) && day.every(e => e && typeof e.name === 'string' && Number.isInteger(e.sets) && e.sets > 0 && e.sets <= 99 && typeof e.reps === 'string' && typeof e.done === 'boolean'))) throw new Error('Invalid plan');
+    if (!Array.isArray(data) || data.length !== 7 || !data.every(day => Array.isArray(day) && day.every(e => e && typeof e.name === 'string' && Number.isInteger(e.sets) && e.sets > 0 && e.sets <= 99 && typeof e.reps === 'string' && typeof e.done === 'boolean' && (e.weight === undefined || typeof e.weight === 'string') && (e.result === undefined || typeof e.result === 'string')))) throw new Error('Invalid plan');
     plan = data;
   }
 } catch { $('notice').textContent = 'Не удалось прочитать сохранённый план. Показан пример; новые изменения попробуем сохранить.'; }
-let selected = (new Date().getDay() + 6) % 7;
+const todayIndex = () => (new Date().getDay() + 6) % 7;
+let selected = todayIndex();
+let moveSource = null;
 function save() {
   try {localStorage.setItem(key, JSON.stringify(plan)); $('notice').textContent = '';}
   catch {$('notice').textContent = 'Браузер не разрешил сохранение. Изменения доступны до закрытия страницы.';}
@@ -32,7 +34,9 @@ function render() {
     button.onclick = () => {selected = i; render();};
     $('days').append(button);
   });
-  $('daytitle').textContent = names[selected];
+  $('daytitle').textContent = names[selected] + (selected === todayIndex() ? ' · сегодня' : '');
+  $('move-today').disabled = !plan[selected].length || selected === todayIndex();
+  $('move').disabled = !plan[selected].length;
   $('exercises').replaceChildren();
   if (!plan[selected].length) {
     const p = document.createElement('p'); p.className = 'empty'; p.textContent = 'День для восстановления. Или добавь свою тренировку.'; $('exercises').append(p);
@@ -46,7 +50,18 @@ function render() {
     const detail = document.createElement('small'); detail.textContent = exercise.sets + ' подх. · ' + exercise.reps; label.append(title, detail);
     const remove = document.createElement('button'); remove.className = 'remove'; remove.textContent = '×'; remove.setAttribute('aria-label', 'Удалить: ' + exercise.name);
     remove.onclick = () => {if (confirm('Удалить упражнение «' + exercise.name + '»?')) {plan[selected].splice(i,1); save(); render();}};
-    row.append(checkbox, label, remove); $('exercises').append(row);
+    const content = document.createElement('div'); content.className = 'exercise-content';
+    const fields = document.createElement('div'); fields.className = 'exercise-fields';
+    [['weight', 'Вес, кг', 'Например, 20'], ['result', 'Результат по подходам', 'Например, 12 / 10 / 8']].forEach(([key, caption, placeholder]) => {
+      const fieldLabel = document.createElement('label'); fieldLabel.textContent = caption;
+      const input = document.createElement('input'); input.type = 'text'; input.maxLength = key === 'weight' ? 40 : 200;
+      input.className = key; input.value = exercise[key] || ''; input.placeholder = placeholder;
+      input.setAttribute('aria-label', caption + ': ' + exercise.name);
+      input.oninput = () => {exercise[key] = input.value; save();};
+      fieldLabel.append(input); fields.append(fieldLabel);
+    });
+    content.append(label, fields);
+    row.append(checkbox, content, remove); $('exercises').append(row);
   });
   const all = plan.flat(), done = all.filter(e => e.done).length, percent = all.length ? Math.round(done / all.length * 100) : 0;
   $('sessions').textContent = plan.filter(d => d.length).length;
@@ -62,3 +77,48 @@ $('form').onsubmit = event => {
   plan[selected].push({name, sets:Number($('sets').value), reps, done:false}); save(); render(); $('dialog').close();
 };
 render();
+
+function openMove(target, source = selected, mode = 'move') {
+  if (!plan[source].length) return;
+  moveSource = source;
+  $('transfer-mode').value = mode;
+  $('move-source').textContent = 'Из дня: ' + names[moveSource] + '. Упражнений: ' + plan[moveSource].length + '.';
+  $('move-target').replaceChildren();
+  names.forEach((name, i) => {
+    if (i === moveSource) return;
+    const option = document.createElement('option');
+    option.value = String(i);
+    option.textContent = name + (i === todayIndex() ? ' (сегодня)' : '');
+    $('move-target').append(option);
+  });
+  $('move-target').value = String(target);
+  $('move-dialog').showModal();
+  $('move-target').focus();
+}
+$('move-today').onclick = () => openMove(todayIndex());
+$('move').onclick = () => openMove(selected === todayIndex() ? (selected + 1) % 7 : todayIndex());
+$('copy-yesterday').onclick = () => {
+  const today = todayIndex(), yesterday = (today + 6) % 7;
+  if (!plan[yesterday].length) {
+    $('move-status').textContent = 'Во вчерашнем дне (' + names[yesterday] + ') пока нет упражнений для копирования.';
+    return;
+  }
+  openMove(today, yesterday, 'copy');
+};
+$('move-cancel').onclick = () => $('move-dialog').close();
+$('move-dialog').addEventListener('close', () => { moveSource = null; });
+$('move-form').onsubmit = event => {
+  event.preventDefault();
+  const target = Number($('move-target').value);
+  if (moveSource === null || !Number.isInteger(target) || target < 0 || target > 6 || target === moveSource || !plan[moveSource].length) return;
+  const source = moveSource;
+  const copying = $('transfer-mode').value === 'copy';
+  plan[target].push(...plan[source].map(exercise => ({...exercise})));
+  if (!copying) plan[source] = [];
+  selected = target;
+  save();
+  render();
+  $('move-status').textContent = (copying ? 'Тренировка скопирована: ' : 'Тренировка перенесена: ') + names[source] + ' → ' + names[target] + '. Отметки выполнения сохранены.';
+  $('move-dialog').close();
+  $('days').querySelector('[aria-pressed="true"]').focus();
+};
