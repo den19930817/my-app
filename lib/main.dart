@@ -64,24 +64,28 @@ class _PlannerPageState extends State<PlannerPage> {
 
   Future<void> _load() async {
     final loaded = await _storage.load();
-    if (mounted)
+    if (mounted) {
       setState(() {
         _plan = loaded.plan;
         _warning = loaded.warning;
       });
+    }
   }
 
   Future<void> _save() async {
     final version = ++_saveVersion;
     try {
       await _storage.save(_plan!);
-      if (mounted && version == _saveVersion) setState(() => _warning = '');
+      if (mounted && version == _saveVersion) {
+        setState(() => _warning = '');
+      }
     } catch (_) {
-      if (mounted && version == _saveVersion)
+      if (mounted && version == _saveVersion) {
         setState(
           () => _warning =
               'Браузер не разрешил сохранение. Изменения доступны до закрытия страницы.',
         );
+      }
     }
   }
 
@@ -634,7 +638,7 @@ class _AddExerciseDialogState extends State<AddExerciseDialog> {
       ),
       FilledButton(
         onPressed: () {
-          if (_form.currentState!.validate())
+          if (_form.currentState!.validate()) {
             Navigator.pop(
               context,
               Exercise(
@@ -643,6 +647,7 @@ class _AddExerciseDialogState extends State<AddExerciseDialog> {
                 reps: _reps.text.trim(),
               ),
             );
+          }
         },
         child: const Text('Добавить'),
       ),

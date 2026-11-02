@@ -60,20 +60,23 @@ class Exercise {
 
 class TrainingPlan {
   TrainingPlan(this.days) {
-    if (days.length != 7)
+    if (days.length != 7) {
       throw const FormatException('В плане должно быть семь дней');
+    }
   }
   final List<List<Exercise>> days;
   factory TrainingPlan.decode(String value) {
     final json = jsonDecode(value);
-    if (json is! List || json.length != 7)
+    if (json is! List || json.length != 7) {
       throw const FormatException('Некорректный план');
+    }
     return TrainingPlan(
       json.map((day) {
         if (day is! List) throw const FormatException('Некорректный день');
         return day.map((e) {
-          if (e is! Map<String, dynamic>)
+          if (e is! Map<String, dynamic>) {
             throw const FormatException('Некорректное упражнение');
+          }
           return Exercise.fromJson(e);
         }).toList();
       }).toList(),
@@ -111,8 +114,9 @@ class TrainingPlan {
         target < 0 ||
         target > 6 ||
         source == target ||
-        days[source].isEmpty)
+        days[source].isEmpty) {
       return false;
+    }
     days[target].addAll(days[source].map((e) => e.copy()));
     if (!copy) days[source].clear();
     return true;
