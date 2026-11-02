@@ -53,6 +53,62 @@ void main() {
     );
     expect(minimal.days[0].first.weight, '');
   });
+  test('Migrates legacy slash-separated repetitions and weights per set', () {
+    final e = Exercise.fromJson({
+      'name': 'Жим',
+      'sets': 3,
+      'reps': '12',
+      'done': true,
+      'weight': '40 / 45 / 50',
+      'result': '12 / 10 / 8',
+    });
+    expect(e.setDetails.map((set) => set.reps), ['12', '10', '8']);
+    expect(e.setDetails.map((set) => set.weight), ['40', '45', '50']);
+    expect(e.result, '12 / 10 / 8');
+    expect(e.done, isTrue);
+  });
+  test('Twenty distinct sets survive persistence and deep copy or move', () {
+    final rows = List.generate(
+      20,
+      (i) => ExerciseSet(reps: '${i + 1}', weight: '${i + 20}.5'),
+    );
+    final plan = TrainingPlan([
+      [Exercise(name: 'Жим', sets: 20, reps: '', setDetails: rows)],
+      [],
+      [],
+      [],
+      [],
+      [],
+      [],
+    ]);
+    final restored = TrainingPlan.decode(plan.encode());
+    expect(restored.days[0].first.setDetails[19].weight, '39.5');
+    expect(restored.transfer(0, 1, copy: true), isTrue);
+    restored.days[1].first.setDetails[0].weight = '99';
+    expect(restored.days[0].first.setDetails[0].weight, '20.5');
+    expect(restored.transfer(1, 2, copy: false), isTrue);
+    expect(restored.days[1], isEmpty);
+    expect(restored.days[2].first.setDetails[19].reps, '20');
+  });
+  test('Keeps older plans with more than twenty sets and ambiguous notes', () {
+    final e = Exercise(
+      name: 'Старый план',
+      sets: 25,
+      reps: '30 секунд',
+      weight: 'свой вес',
+      result: '',
+    );
+    expect(Exercise.fromJson(e.toJson()).sets, 25);
+    expect(e.setDetails.last.reps, '30 секунд');
+    expect(e.setDetails.last.weight, 'свой вес');
+  });
+  test('Rejects malformed structured sets instead of dropping saved rows', () {
+    final json = Exercise(name: 'Жим', sets: 3, reps: '12').toJson();
+    json['setDetails'] = [
+      {'reps': '10', 'weight': '30'},
+    ];
+    expect(() => Exercise.fromJson(json), throwsFormatException);
+  });
   test('Rejects corrupt saved data', () {
     expect(() => TrainingPlan.decode('{}'), throwsFormatException);
     expect(
