@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:training_plan/main.dart';
@@ -70,14 +71,15 @@ void main() {
             .initialValue!;
         await tester.tap(dropdown);
         await tester.pumpAndSettle();
-        final menu = find.byType(Scrollable).last;
-        final option = find.descendant(of: menu, matching: find.text('$count'));
-        await tester.scrollUntilVisible(
-          option,
-          count < current ? -160 : 160,
-          scrollable: menu,
-        );
-        await tester.tap(option);
+        for (var step = 0; step < (count - current).abs(); step++) {
+          await tester.sendKeyEvent(
+            count < current
+                ? LogicalKeyboardKey.arrowUp
+                : LogicalKeyboardKey.arrowDown,
+          );
+          await tester.pump();
+        }
+        await tester.sendKeyEvent(LogicalKeyboardKey.enter);
         await tester.pumpAndSettle();
       }
 
