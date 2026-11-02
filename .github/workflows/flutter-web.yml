@@ -1,0 +1,105 @@
+name: Flutter Web
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+permissions:
+  contents: write
+concurrency:
+  group: flutter-web
+  cancel-in-progress: true
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+      - name: Install pinned official Flutter SDK
+        run: |
+          git clone --depth 1 --branch 3.35.7 https://github.com/flutter/flutter.git "$RUNNER_TEMP/flutter"
+          test "$(git -C "$RUNNER_TEMP/flutter" rev-parse HEAD)" = adc901062556672b4138e18a4dc62a4be8f4b3c2
+          echo "$RUNNER_TEMP/flutter/bin" >> "$GITHUB_PATH"
+          "$RUNNER_TEMP/flutter/bin/flutter" config --no-analytics
+      - name: Analyze, test and build
+        id: checks
+        run: |
+          set -o pipefail
+          {
+            flutter pub get &&
+            dart format lib test &&
+            flutter analyze &&
+            flutter test &&
+            flutter build web --release --base-href /my-app/ --no-web-resources-cdn --pwa-strategy=none
+          } 2>&1 | tee "$RUNNER_TEMP/flutter-checks.log"
+      - name: Check out existing Pages branch
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          ref: gh-pages
+          path: published
+      - name: Publish tested web build
+        env:
+          SOURCE_SHA: ${{ github.sha }}
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+          import shutil
+          target = Path('published')
+          for item in target.iterdir():
+              if item.name == '.git':
+                  continue
+              if item.is_dir():
+                  shutil.rmtree(item)
+              else:
+                  item.unlink()
+          shutil.copytree('build/web', target, dirs_exist_ok=True)
+          PY
+          touch published/.nojekyll
+          printf '%s\n' "$SOURCE_SHA" > published/source-revision.txt
+          git -C published config user.name 'github-actions[bot]'
+          git -C published config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git -C published add -A
+          git -C published commit -m "Build Flutter Web from $SOURCE_SHA"
+          git -C published push origin HEAD:gh-pages
+      - name: Check out CI report workspace
+        if: always()
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          path: ci-report
+      - name: Save build evidence
+        if: always()
+        env:
+          SOURCE_SHA: ${{ github.sha }}
+          CHECK_RESULT: ${{ steps.checks.outcome }}
+        run: |
+          if git -C ci-report fetch origin flutter-ci; then
+            git -C ci-report checkout -B flutter-ci FETCH_HEAD
+          else
+            git -C ci-report checkout --orphan flutter-ci
+          fi
+          python3 - <<'PY'
+          from pathlib import Path
+          import shutil
+          target = Path('ci-report')
+          for item in target.iterdir():
+              if item.name == '.git':
+                  continue
+              if item.is_dir():
+                  shutil.rmtree(item)
+              else:
+                  item.unlink()
+          for name in ('lib', 'test', 'pubspec.lock'):
+              source = Path(name)
+              if source.is_dir():
+                  shutil.copytree(source, target / name)
+              elif source.exists():
+                  shutil.copy2(source, target / name)
+          PY
+          printf 'source=%s\nchecks=%s\n' "$SOURCE_SHA" "$CHECK_RESULT" > ci-report/status.txt
+          if test -f "$RUNNER_TEMP/flutter-checks.log"; then
+            cp "$RUNNER_TEMP/flutter-checks.log" ci-report/build.log
+          fi
+          git -C ci-report config user.name 'github-actions[bot]'
+          git -C ci-report config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git -C ci-report add -A
+          git -C ci-report commit -m "Flutter check results for $SOURCE_SHA"
+          git -C ci-report push origin HEAD:flutter-ci
