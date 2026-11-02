@@ -186,7 +186,7 @@ void main() {
     await tester.tap(find.widgetWithText(FilledButton, 'Сохранить'));
     await tester.pumpAndSettle();
     expect(find.text('Тяга блока'), findsOneWidget);
-    final setButton = find.widgetWithText(TextButton, 'Подход 2');
+    final setButton = find.text('Подход 2');
     await tester.ensureVisible(setButton);
     await tester.tap(setButton);
     await tester.pumpAndSettle();
