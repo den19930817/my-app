@@ -662,6 +662,7 @@ class _AddExerciseDialogState extends State<AddExerciseDialog> {
               const SizedBox(height: 12),
               DropdownButtonFormField<int>(
                 key: const ValueKey('set-count'),
+                menuMaxHeight: 320,
                 initialValue: _count,
                 isExpanded: true,
                 decoration: const InputDecoration(
