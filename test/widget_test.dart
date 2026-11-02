@@ -70,11 +70,12 @@ void main() {
             .initialValue!;
         await tester.tap(dropdown);
         await tester.pumpAndSettle();
-        final option = find.text('$count').last;
+        final menu = find.byType(Scrollable).last;
+        final option = find.descendant(of: menu, matching: find.text('$count'));
         await tester.scrollUntilVisible(
           option,
           count < current ? -160 : 160,
-          scrollable: find.byType(Scrollable).last,
+          scrollable: menu,
         );
         await tester.tap(option);
         await tester.pumpAndSettle();
