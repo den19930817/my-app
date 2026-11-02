@@ -503,7 +503,7 @@ class ExerciseTile extends StatelessWidget {
                 ),
                 const SizedBox(height: 5),
                 Text(
-                  '${exercise.sets} подх. · ${exercise.reps}',
+                  'Подходов: ${exercise.sets}',
                   style: const TextStyle(fontSize: 13, color: Colors.grey),
                 ),
               ],
@@ -517,51 +517,20 @@ class ExerciseTile extends StatelessWidget {
         ],
       ),
       const SizedBox(height: 12),
-      LayoutBuilder(
-        builder: (context, constraints) {
-          final width = constraints.maxWidth < 350
-              ? constraints.maxWidth
-              : (constraints.maxWidth - 12) / 2;
-          return Wrap(
-            spacing: 12,
-            runSpacing: 12,
-            children: [
-              SizedBox(
-                width: width,
-                child: TextFormField(
-                  initialValue: exercise.weight,
-                  maxLength: 40,
-                  decoration: const InputDecoration(
-                    labelText: 'Вес, кг',
-                    hintText: '40 / 45 / 50',
-                    counterText: '',
-                  ),
-                  onChanged: (value) {
-                    exercise.weight = value;
-                    onEdit();
-                  },
-                ),
-              ),
-              SizedBox(
-                width: width,
-                child: TextFormField(
-                  initialValue: exercise.result,
-                  maxLength: 200,
-                  decoration: const InputDecoration(
-                    labelText: 'Результат по подходам',
-                    hintText: '12 / 10 / 8',
-                    counterText: '',
-                  ),
-                  onChanged: (value) {
-                    exercise.result = value;
-                    onEdit();
-                  },
-                ),
-              ),
-            ],
-          );
-        },
-      ),
+      ...List.generate(exercise.sets, (i) => Padding(
+        padding: const EdgeInsets.only(bottom: 14),
+        child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+          Text('Подход ${i + 1}', style: const TextStyle(fontWeight: FontWeight.w600)),
+          const SizedBox(height: 10),
+          SetFields(
+            index: i,
+            initialReps: exercise.setDetails[i].reps,
+            initialWeight: exercise.setDetails[i].weight,
+            onReps: (value) { exercise.setDetails[i].reps = value; onEdit(); },
+            onWeight: (value) { exercise.setDetails[i].weight = value; onEdit(); },
+          ),
+        ]),
+      )),
       const SizedBox(height: 8),
     ],
   );
@@ -573,16 +542,54 @@ class AddExerciseDialog extends StatefulWidget {
   State<AddExerciseDialog> createState() => _AddExerciseDialogState();
 }
 
+// Shared by the creation form and saved exercise cards.
+class SetFields extends StatelessWidget {
+  const SetFields({super.key, required this.index, this.initialReps = '', this.initialWeight = '', this.repsController, this.weightController, this.onReps, this.onWeight, this.validate = false});
+  final int index;
+  final String initialReps;
+  final String initialWeight;
+  final TextEditingController? repsController;
+  final TextEditingController? weightController;
+  final ValueChanged<String>? onReps;
+  final ValueChanged<String>? onWeight;
+  final bool validate;
+  @override
+  Widget build(BuildContext context) => Row(crossAxisAlignment: CrossAxisAlignment.start, children: [
+    Expanded(child: TextFormField(
+      key: ValueKey('set-reps-$index'),
+      controller: repsController,
+      initialValue: repsController == null ? initialReps : null,
+      maxLength: 50,
+      keyboardType: TextInputType.text,
+      decoration: InputDecoration(labelText: 'Повторения · ${index + 1}', hintText: '12 или 30 секунд', counterText: ''),
+      validator: validate ? (value) => value == null || value.trim().isEmpty ? 'Укажите повторения' : null : null,
+      onChanged: onReps,
+    )),
+    const SizedBox(width: 12),
+    Expanded(child: TextFormField(
+      key: ValueKey('set-weight-$index'),
+      controller: weightController,
+      initialValue: weightController == null ? initialWeight : null,
+      maxLength: 40,
+      keyboardType: const TextInputType.numberWithOptions(decimal: true),
+      decoration: InputDecoration(labelText: 'Вес, кг · ${index + 1}', hintText: 'Без веса — пусто', counterText: ''),
+      onChanged: onWeight,
+    )),
+  ]);
+}
+
 class _AddExerciseDialogState extends State<AddExerciseDialog> {
   final _form = GlobalKey<FormState>();
   final _name = TextEditingController();
-  final _sets = TextEditingController(text: '3');
-  final _reps = TextEditingController();
+  final _reps = List.generate(20, (_) => TextEditingController());
+  final _weights = List.generate(20, (_) => TextEditingController());
+  int _count = 3;
   @override
   void dispose() {
     _name.dispose();
-    _sets.dispose();
-    _reps.dispose();
+    for (final controller in [..._reps, ..._weights]) {
+      controller.dispose();
+    }
     super.dispose();
   }
 
@@ -590,68 +597,51 @@ class _AddExerciseDialogState extends State<AddExerciseDialog> {
   Widget build(BuildContext context) => AlertDialog(
     title: const Text('Новое упражнение'),
     content: SizedBox(
-      width: 360,
+      width: 460,
       child: SingleChildScrollView(
         child: Form(
           key: _form,
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              TextFormField(
-                controller: _name,
-                autofocus: true,
-                maxLength: 100,
-                decoration: const InputDecoration(labelText: 'Название'),
-                validator: (value) => value == null || value.trim().isEmpty
-                    ? 'Введите название'
-                    : null,
-              ),
-              const SizedBox(height: 12),
-              TextFormField(
-                controller: _sets,
-                keyboardType: TextInputType.number,
-                decoration: const InputDecoration(labelText: 'Подходы'),
-                validator: (value) {
-                  final n = int.tryParse(value ?? '');
-                  return n == null || n < 1 || n > 99 ? 'От 1 до 99' : null;
-                },
-              ),
-              const SizedBox(height: 20),
-              TextFormField(
-                controller: _reps,
-                maxLength: 50,
-                decoration: const InputDecoration(
-                  labelText: 'Повторения или время',
-                ),
-                validator: (value) => value == null || value.trim().isEmpty
-                    ? 'Введите повторения или время'
-                    : null,
-              ),
-            ],
-          ),
+          child: Column(mainAxisSize: MainAxisSize.min, crossAxisAlignment: CrossAxisAlignment.start, children: [
+            TextFormField(
+              key: const ValueKey('exercise-name'),
+              controller: _name,
+              autofocus: true,
+              maxLength: 100,
+              decoration: const InputDecoration(labelText: 'Название'),
+              validator: (value) => value == null || value.trim().isEmpty ? 'Введите название' : null,
+            ),
+            const SizedBox(height: 12),
+            DropdownButtonFormField<int>(
+              key: const ValueKey('set-count'),
+              initialValue: _count,
+              isExpanded: true,
+              decoration: const InputDecoration(labelText: 'Количество подходов'),
+              items: List.generate(20, (i) => DropdownMenuItem(value: i + 1, child: Text('${i + 1}'))),
+              onChanged: (value) => setState(() => _count = value ?? _count),
+            ),
+            const SizedBox(height: 20),
+            ...List.generate(_count, (i) => Padding(
+              padding: const EdgeInsets.only(bottom: 20),
+              child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+                Text('Подход ${i + 1}', style: const TextStyle(fontWeight: FontWeight.w600)),
+                const SizedBox(height: 12),
+                SetFields(index: i, repsController: _reps[i], weightController: _weights[i], validate: true),
+              ]),
+            )),
+          ]),
         ),
       ),
     ),
     actions: [
-      TextButton(
-        onPressed: () => Navigator.pop(context),
-        child: const Text('Отмена'),
-      ),
-      FilledButton(
-        onPressed: () {
-          if (_form.currentState!.validate()) {
-            Navigator.pop(
-              context,
-              Exercise(
-                name: _name.text.trim(),
-                sets: int.parse(_sets.text),
-                reps: _reps.text.trim(),
-              ),
-            );
-          }
-        },
-        child: const Text('Добавить'),
-      ),
+      TextButton(onPressed: () => Navigator.pop(context), child: const Text('Отмена')),
+      FilledButton(onPressed: () {
+        if (_form.currentState!.validate()) {
+          Navigator.pop(context, Exercise(
+            name: _name.text.trim(), sets: _count, reps: '',
+            setDetails: List.generate(_count, (i) => ExerciseSet(reps: _reps[i].text.trim(), weight: _weights[i].text.trim())),
+          ));
+        }
+      }, child: const Text('Добавить')),
     ],
   );
 }

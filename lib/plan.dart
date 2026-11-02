@@ -12,21 +12,46 @@ const dayNames = [
 const shortDayNames = ['Пн', 'Вт', 'Ср', 'Чт', 'Пт', 'Сб', 'Вс'];
 int dayIndex(DateTime date) => date.weekday - 1;
 
+class ExerciseSet {
+  ExerciseSet({this.reps = '', this.weight = ''});
+  String reps;
+  String weight;
+  factory ExerciseSet.fromJson(Map<String, dynamic> json) {
+    if (json['reps'] is! String || json['weight'] is! String) {
+      throw const FormatException('Некорректный подход');
+    }
+    return ExerciseSet(reps: json['reps'] as String, weight: json['weight'] as String);
+  }
+  Map<String, dynamic> toJson() => {'reps': reps, 'weight': weight};
+}
+
 class Exercise {
   Exercise({
     required this.name,
-    required this.sets,
+    required int sets,
     required this.reps,
     this.done = false,
     this.weight = '',
     this.result = '',
-  });
+    List<ExerciseSet>? setDetails,
+  }) : setDetails = setDetails ?? List.generate(sets, (i) => ExerciseSet(
+    reps: _legacyValue(result.isEmpty ? reps : result, i, sets),
+    weight: _legacyValue(weight, i, sets),
+  ));
   final String name;
-  final int sets;
   final String reps;
   bool done;
+  // Keep the original text as well, so migration never discards older notes.
   String weight;
   String result;
+  final List<ExerciseSet> setDetails;
+  int get sets => setDetails.length;
+
+  static String _legacyValue(String value, int index, int count) {
+    final parts = value.split('/');
+    return (parts.length == count ? parts[index] : value).trim();
+  }
+
   factory Exercise.fromJson(Map<String, dynamic> json) {
     if (json['name'] is! String ||
         json['sets'] is! int ||
@@ -38,6 +63,19 @@ class Exercise {
         (json['result'] != null && json['result'] is! String)) {
       throw const FormatException('Некорректное упражнение');
     }
+    List<ExerciseSet>? details;
+    if (json.containsKey('setDetails')) {
+      final raw = json['setDetails'];
+      if (raw is! List || raw.length != json['sets']) {
+        throw const FormatException('Некорректное число подходов');
+      }
+      details = raw.map((value) {
+        if (value is! Map<String, dynamic>) {
+          throw const FormatException('Некорректный подход');
+        }
+        return ExerciseSet.fromJson(value);
+      }).toList();
+    }
     return Exercise(
       name: json['name'] as String,
       sets: json['sets'] as int,
@@ -45,6 +83,7 @@ class Exercise {
       done: json['done'] as bool,
       weight: json['weight'] as String? ?? '',
       result: json['result'] as String? ?? '',
+      setDetails: details,
     );
   }
   Map<String, dynamic> toJson() => {
@@ -54,6 +93,7 @@ class Exercise {
     'done': done,
     'weight': weight,
     'result': result,
+    'setDetails': setDetails.map((set) => set.toJson()).toList(),
   };
   Exercise copy() => Exercise.fromJson(toJson());
 }
