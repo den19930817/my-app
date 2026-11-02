@@ -65,12 +65,15 @@ void main() {
       Future<void> selectCount(int count) async {
         final dropdown = find.byKey(const ValueKey('set-count'));
         await tester.ensureVisible(dropdown);
+        final current = tester
+            .widget<DropdownButtonFormField<int>>(dropdown)
+            .initialValue!;
         await tester.tap(dropdown);
         await tester.pumpAndSettle();
         final option = find.text('$count').last;
         await tester.scrollUntilVisible(
           option,
-          160,
+          count < current ? -160 : 160,
           scrollable: find.byType(Scrollable).last,
         );
         await tester.tap(option);
