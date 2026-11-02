@@ -154,6 +154,125 @@ void main() {
     expect(exercise.setDetails[1].weight, '55.5');
     expect(edits, 2);
   });
+  testWidgets('Tap exercise and set edits save and preserve other values', (
+    tester,
+  ) async {
+    SharedPreferences.setMockInitialValues({});
+    final prefs = await SharedPreferences.getInstance();
+    final exercise = Exercise(
+      name: 'Тяга',
+      sets: 3,
+      reps: '',
+      done: true,
+      setDetails: [
+        ExerciseSet(reps: '12', weight: '40'),
+        ExerciseSet(reps: '10', weight: '45'),
+        ExerciseSet(reps: '8', weight: '50'),
+      ],
+    );
+    final plan = TrainingPlan(List.generate(7, (_) => <Exercise>[]));
+    plan.days[dayIndex(DateTime.now())].add(exercise);
+    await prefs.setString(storageKey, plan.encode());
+    await tester.pumpWidget(const TrainingApp());
+    await tester.pumpAndSettle();
+    await tester.ensureVisible(find.text('Тяга'));
+    await tester.tap(find.text('Тяга'));
+    await tester.pumpAndSettle();
+    expect(find.text('Изменить упражнение'), findsOneWidget);
+    await tester.enterText(
+      find.byKey(const ValueKey('exercise-name')),
+      'Тяга блока',
+    );
+    await tester.tap(find.widgetWithText(FilledButton, 'Сохранить'));
+    await tester.pumpAndSettle();
+    expect(find.text('Тяга блока'), findsOneWidget);
+    final setButton = find.widgetWithText(TextButton, 'Подход 2');
+    await tester.ensureVisible(setButton);
+    await tester.tap(setButton);
+    await tester.pumpAndSettle();
+    final dialog = find.byType(AddExerciseDialog);
+    expect(
+      find.descendant(of: dialog, matching: find.byType(SetFields)),
+      findsOneWidget,
+    );
+    final reps = find.descendant(
+      of: dialog,
+      matching: find.byKey(const ValueKey('set-reps-1')),
+    );
+    final weight = find.descendant(
+      of: dialog,
+      matching: find.byKey(const ValueKey('set-weight-1')),
+    );
+    await tester.enterText(reps, '6');
+    await tester.enterText(weight, '55.5');
+    await tester.tap(find.widgetWithText(FilledButton, 'Сохранить'));
+    await tester.pumpAndSettle();
+    final saved = TrainingPlan.decode(
+      prefs.getString(storageKey)!,
+    ).days[dayIndex(DateTime.now())].first;
+    expect(saved.name, 'Тяга блока');
+    expect(saved.done, isTrue);
+    expect(saved.setDetails.map((set) => set.reps), ['12', '6', '8']);
+    expect(saved.setDetails.map((set) => set.weight), ['40', '55.5', '50']);
+    expect(tester.takeException(), isNull);
+  });
+  testWidgets(
+    'Exercise editor changes set count while cancellation discards draft',
+    (tester) async {
+      final original = Exercise(
+        name: 'Жим',
+        sets: 3,
+        reps: '12',
+        done: true,
+        weight: '40',
+        result: '12 / 10 / 8',
+      );
+      Exercise? edited;
+      await tester.pumpWidget(
+        MaterialApp(
+          home: Scaffold(
+            body: Builder(
+              builder: (context) => TextButton(
+                onPressed: () async {
+                  edited = await showDialog<Exercise>(
+                    context: context,
+                    builder: (_) => AddExerciseDialog(exercise: original),
+                  );
+                },
+                child: const Text('Открыть'),
+              ),
+            ),
+          ),
+        ),
+      );
+      await tester.tap(find.text('Открыть'));
+      await tester.pumpAndSettle();
+      await tester.enterText(
+        find.byKey(const ValueKey('exercise-name')),
+        'Черновик',
+      );
+      await tester.tap(find.text('Отмена'));
+      await tester.pumpAndSettle();
+      expect(edited, isNull);
+      expect(original.name, 'Жим');
+      await tester.tap(find.text('Открыть'));
+      await tester.pumpAndSettle();
+      await tester.tap(find.byKey(const ValueKey('set-count')));
+      await tester.pumpAndSettle();
+      await tester.sendKeyEvent(LogicalKeyboardKey.arrowUp);
+      await tester.pump();
+      await tester.sendKeyEvent(LogicalKeyboardKey.enter);
+      await tester.pumpAndSettle();
+      expect(find.byType(SetFields), findsNWidgets(2));
+      await tester.tap(find.widgetWithText(FilledButton, 'Сохранить'));
+      await tester.pumpAndSettle();
+      expect(edited!.sets, 2);
+      expect(edited!.setDetails.map((set) => set.reps), ['12', '10']);
+      expect(edited!.done, isTrue);
+      expect(edited!.weight, '40');
+      expect(original.sets, 3);
+    },
+  );
   testWidgets('Transfer dialog supports copy mode and cancellation', (
     tester,
   ) async {
