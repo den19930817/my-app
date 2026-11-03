@@ -1,7 +1,7 @@
 {"build_type":"legacy","html_url":"https://den19930817.github.io/my-app/","source":{"branch":"gh-pages","path":"/"},"status":"errored"}
 {"commit":"9f490bf33a6b882155664a8dc37d7039bb112e3a","error":{"message":null},"status":"building"}
 {"commit":"9f490bf33a6b882155664a8dc37d7039bb112e3a","error":{"message":null},"status":"building"}
-0f231e996c291b795986ff32a53a60d1535c107d
+Live revision: 0f231e996c291b795986ff32a53a60d1535c107d
 <!DOCTYPE html>
 <html lang="ru">
 <head>
@@ -20,7 +20,7 @@
 </body>
 </html>
 {"commit":"9f490bf33a6b882155664a8dc37d7039bb112e3a","error":{"message":null},"status":"building"}
-0f231e996c291b795986ff32a53a60d1535c107d
+Live revision: 0f231e996c291b795986ff32a53a60d1535c107d
 <!DOCTYPE html>
 <html lang="ru">
 <head>
@@ -39,7 +39,7 @@
 </body>
 </html>
 {"commit":"9f490bf33a6b882155664a8dc37d7039bb112e3a","error":{"message":null},"status":"building"}
-0f231e996c291b795986ff32a53a60d1535c107d
+Live revision: 0f231e996c291b795986ff32a53a60d1535c107d
 <!DOCTYPE html>
 <html lang="ru">
 <head>
@@ -55,5 +55,138 @@
   <div id="loading" role="status">Загружаем тренировочный план…</div>
   <script>window.addEventListener('flutter-first-frame',function(){document.getElementById('loading')?.remove();});</script>
   <script src="flutter_bootstrap.js" async></script>
+</body>
+</html>
+{"commit":"9f490bf33a6b882155664a8dc37d7039bb112e3a","error":{"message":null},"status":"building"}
+Live revision: 0f231e996c291b795986ff32a53a60d1535c107d
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <base href="/my-app/">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#000000">
+  <meta name="description" content="Тренировочный план: упражнения, подходы, вес и результаты.">
+  <title>Тренировочный план</title>
+  <style>body{margin:0;background:#ffeb00;color:#000000;font-family:system-ui,sans-serif}#loading{padding:48px;text-align:center}</style>
+</head>
+<body>
+  <div id="loading" role="status">Загружаем тренировочный план…</div>
+  <script>window.addEventListener('flutter-first-frame',function(){document.getElementById('loading')?.remove();});</script>
+  <script src="flutter_bootstrap.js" async></script>
+</body>
+</html>
+{"commit":"9f490bf33a6b882155664a8dc37d7039bb112e3a","error":{"message":null},"status":"building"}
+Live revision: 0f231e996c291b795986ff32a53a60d1535c107d
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <base href="/my-app/">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#000000">
+  <meta name="description" content="Тренировочный план: упражнения, подходы, вес и результаты.">
+  <title>Тренировочный план</title>
+  <style>body{margin:0;background:#ffeb00;color:#000000;font-family:system-ui,sans-serif}#loading{padding:48px;text-align:center}</style>
+</head>
+<body>
+  <div id="loading" role="status">Загружаем тренировочный план…</div>
+  <script>window.addEventListener('flutter-first-frame',function(){document.getElementById('loading')?.remove();});</script>
+  <script src="flutter_bootstrap.js" async></script>
+</body>
+</html>
+{"commit":"9f490bf33a6b882155664a8dc37d7039bb112e3a","error":{"message":null},"status":"building"}
+Live revision: 0f231e996c291b795986ff32a53a60d1535c107d
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <base href="/my-app/">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#000000">
+  <meta name="description" content="Тренировочный план: упражнения, подходы, вес и результаты.">
+  <title>Тренировочный план</title>
+  <style>body{margin:0;background:#ffeb00;color:#000000;font-family:system-ui,sans-serif}#loading{padding:48px;text-align:center}</style>
+</head>
+<body>
+  <div id="loading" role="status">Загружаем тренировочный план…</div>
+  <script>window.addEventListener('flutter-first-frame',function(){document.getElementById('loading')?.remove();});</script>
+  <script src="flutter_bootstrap.js" async></script>
+</body>
+</html>
+{"commit":"9f490bf33a6b882155664a8dc37d7039bb112e3a","error":{"message":null},"status":"building"}
+Live revision: 0f231e996c291b795986ff32a53a60d1535c107d
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <base href="/my-app/">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#000000">
+  <meta name="description" content="Тренировочный план: упражнения, подходы, вес и результаты.">
+  <title>Тренировочный план</title>
+  <style>body{margin:0;background:#ffeb00;color:#000000;font-family:system-ui,sans-serif}#loading{padding:48px;text-align:center}</style>
+</head>
+<body>
+  <div id="loading" role="status">Загружаем тренировочный план…</div>
+  <script>window.addEventListener('flutter-first-frame',function(){document.getElementById('loading')?.remove();});</script>
+  <script src="flutter_bootstrap.js" async></script>
+</body>
+</html>
+{"commit":"9f490bf33a6b882155664a8dc37d7039bb112e3a","error":{"message":null},"status":"building"}
+Live revision: 0f231e996c291b795986ff32a53a60d1535c107d
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <base href="/my-app/">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#000000">
+  <meta name="description" content="Тренировочный план: упражнения, подходы, вес и результаты.">
+  <title>Тренировочный план</title>
+  <style>body{margin:0;background:#ffeb00;color:#000000;font-family:system-ui,sans-serif}#loading{padding:48px;text-align:center}</style>
+</head>
+<body>
+  <div id="loading" role="status">Загружаем тренировочный план…</div>
+  <script>window.addEventListener('flutter-first-frame',function(){document.getElementById('loading')?.remove();});</script>
+  <script src="flutter_bootstrap.js" async></script>
+</body>
+</html>
+{"commit":"9f490bf33a6b882155664a8dc37d7039bb112e3a","error":{"message":null},"status":"building"}
+Live revision: 0f231e996c291b795986ff32a53a60d1535c107d
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <base href="/my-app/">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#000000">
+  <meta name="description" content="Тренировочный план: упражнения, подходы, вес и результаты.">
+  <title>Тренировочный план</title>
+  <style>body{margin:0;background:#ffeb00;color:#000000;font-family:system-ui,sans-serif}#loading{padding:48px;text-align:center}</style>
+</head>
+<body>
+  <div id="loading" role="status">Загружаем тренировочный план…</div>
+  <script>window.addEventListener('flutter-first-frame',function(){document.getElementById('loading')?.remove();});</script>
+  <script src="flutter_bootstrap.js" async></script>
+</body>
+</html>
+{"commit":"9f490bf33a6b882155664a8dc37d7039bb112e3a","error":{"message":null},"status":"built"}
+Live revision: 726dcc2f1be11011b328c2e75bd6ed718b69e5d0
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <base href="/my-app/">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#000000">
+  <meta name="description" content="Тренировочный план: упражнения, подходы, вес и результаты.">
+  <title>Тренировочный план</title>
+  <style>body{margin:0;background:#ffeb00;color:#000000;font-family:system-ui,sans-serif}#loading{padding:48px;text-align:center}</style>
+</head>
+<body>
+  <div id="loading" role="status">Загружаем тренировочный план…</div>
+  <script>window.addEventListener('flutter-first-frame',function(){document.getElementById('loading')?.remove();});</script>
+  <script src="flutter_bootstrap.726dcc2f1be11011b328c2e75bd6ed718b69e5d0.js" async></script>
 </body>
 </html>
