@@ -1,11 +1,11 @@
-Downloading Material fonts...                                      244ms
-Downloading Gradle Wrapper...                                       25ms
-Downloading package sky_engine...                                   89ms
-Downloading package flutter_gpu...                                  47ms
-Downloading flutter_patched_sdk tools...                           137ms
-Downloading flutter_patched_sdk_product tools...                   128ms
-Downloading linux-x64 tools...                                     749ms
-Downloading linux-x64/font-subset tools...                         103ms
+Downloading Material fonts...                                      251ms
+Downloading Gradle Wrapper...                                       17ms
+Downloading package sky_engine...                                  118ms
+Downloading package flutter_gpu...                                  52ms
+Downloading flutter_patched_sdk tools...                           229ms
+Downloading flutter_patched_sdk_product tools...                   243ms
+Downloading linux-x64 tools...                                     963ms
+Downloading linux-x64/font-subset tools...                         119ms
 Resolving dependencies...
 Downloading packages...
   characters 1.4.0 (1.4.1 available)
@@ -29,7 +29,7 @@ Got dependencies!
 Try `flutter pub outdated` for more information.
 Formatted lib/main.dart
 Formatted test/storage_test.dart
-Formatted 9 files (2 changed) in 0.35 seconds.
+Formatted 9 files (2 changed) in 0.54 seconds.
 Resolving dependencies...
 Downloading packages...
   characters 1.4.0 (1.4.1 available)
@@ -52,7 +52,7 @@ Got dependencies!
 16 packages have newer versions incompatible with dependency constraints.
 Try `flutter pub outdated` for more information.
 Analyzing my-app...                                             
-No issues found! (ran in 9.1s)
+No issues found! (ran in 11.1s)
 Resolving dependencies...
 Downloading packages...
   characters 1.4.0 (1.4.1 available)
@@ -97,7 +97,7 @@ Try `flutter pub outdated` for more information.
 ✅ /home/runner/work/my-app/my-app/test/widget_test.dart: Transfer dialog supports copy mode and cancellation
 
 🎉 20 tests passed.
-Downloading Web SDK...                                             836ms
+Downloading Web SDK...                                           1,261ms
 Resolving dependencies...
 Downloading packages...
   characters 1.4.0 (1.4.1 available)
@@ -124,5 +124,5 @@ Wasm dry run succeeded. Consider building and testing your application with the 
 Use --no-wasm-dry-run to disable these warnings.
 Expected to find fonts for (MaterialIcons, packages/cupertino_icons/CupertinoIcons), but found (MaterialIcons). This usually means you are referring to font families in an IconData class but not including them in the assets section of your pubspec.yaml, are missing the package that would include them, or are missing "uses-material-design: true".
 Font asset "MaterialIcons-Regular.otf" was tree-shaken, reducing it from 1645184 to 8172 bytes (99.5% reduction). Tree-shaking can be disabled by providing the --no-tree-shake-icons flag when building your app.
-Compiling lib/main.dart for the Web...                             24.0s
+Compiling lib/main.dart for the Web...                             30.4s
 ✓ Built build/web
