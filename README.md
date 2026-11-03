@@ -38,7 +38,7 @@ flutter build web --release --base-href /my-app/ --no-web-resources-cdn --pwa-st
 
 Workflow `.github/workflows/flutter-web.yml` при изменениях `main` устанавливает фиксированный Flutter SDK, запускает анализ и тесты, собирает сайт и записывает только готовую сборку в `gh-pages`, сохраняя историю ветки. В **Settings → Pages** остаётся источник **Deploy from a branch → gh-pages → / (root)**.
 
-GitHub не запускает branch-based Pages build от коммитов, созданных `GITHUB_TOKEN`. После успешного workflow требуется коммит в `gh-pages` от пользователя (достаточно пустого коммита) либо переключение на публикацию через официальный Pages Actions workflow. В текущем процессе завершающий коммит публикации отправляется из облачной среды после проверки `source-revision.txt`.
+После записи сборки в `gh-pages` workflow явно запрашивает GitHub Pages build через API (разрешение `pages: write`). Ручной коммит публикации не требуется. Загрузчик Flutter и Dart-код получают имена с SHA сборки: браузер загружает новые файлы вместо старых из кеша. `source-revision.txt` показывает исходный коммит опубликованной сборки. Для диагностики и повторного запуска публикации доступен workflow `Verify and repair Pages publication`.
 
 Адрес: https://den19930817.github.io/my-app/
 
