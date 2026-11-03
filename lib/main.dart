@@ -8,8 +8,8 @@ void main() {
   runApp(const TrainingApp());
 }
 
-const forest = Color(0xff264e3f);
-const paper = Color(0xfff6f7f3);
+const ink = Colors.black;
+const brightYellow = Color(0xffffeb00);
 
 class TrainingApp extends StatelessWidget {
   const TrainingApp({super.key});
@@ -23,12 +23,32 @@ class TrainingApp extends StatelessWidget {
     theme: ThemeData(
       useMaterial3: true,
       fontFamily: 'Roboto',
-      scaffoldBackgroundColor: paper,
-      colorScheme: ColorScheme.fromSeed(
-        seedColor: forest,
-        primary: forest,
-        surface: Colors.white,
+      scaffoldBackgroundColor: brightYellow,
+      colorScheme: const ColorScheme.light(
+        primary: ink,
+        onPrimary: Colors.white,
+        primaryContainer: ink,
+        onPrimaryContainer: Colors.white,
+        secondary: ink,
+        onSecondary: Colors.white,
+        secondaryContainer: ink,
+        onSecondaryContainer: Colors.white,
+        tertiary: ink,
+        onTertiary: Colors.white,
+        surface: brightYellow,
+        onSurface: ink,
+        onSurfaceVariant: ink,
+        surfaceTint: Colors.transparent,
+        outline: ink,
+        outlineVariant: Color(0xff665e00),
+        inverseSurface: ink,
+        onInverseSurface: Colors.white,
       ),
+      dialogTheme: const DialogThemeData(
+        backgroundColor: brightYellow,
+        surfaceTintColor: Colors.transparent,
+      ),
+      dividerColor: Colors.black26,
       inputDecorationTheme: const InputDecorationTheme(
         border: OutlineInputBorder(),
         isDense: true,
@@ -177,12 +197,15 @@ class _PlannerPageState extends State<PlannerPage> {
     final plan = _plan;
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: paper,
+        backgroundColor: ink,
+        foregroundColor: Colors.white,
+        surfaceTintColor: Colors.transparent,
+        scrolledUnderElevation: 0,
         title: const Text(
           'Тренировочный план',
           style: TextStyle(fontWeight: FontWeight.bold),
         ),
-        leading: const Icon(Icons.fitness_center, color: forest),
+        leading: const Icon(Icons.fitness_center, color: Colors.white),
       ),
       body: plan == null
           ? const Center(child: CircularProgressIndicator())
@@ -198,7 +221,7 @@ class _PlannerPageState extends State<PlannerPage> {
                       const Text(
                         'ТВОЙ РИТМ · ТВОЙ ПРОГРЕСС',
                         style: TextStyle(
-                          color: forest,
+                          color: ink,
                           letterSpacing: 2,
                           fontSize: 12,
                           fontWeight: FontWeight.bold,
@@ -212,7 +235,7 @@ class _PlannerPageState extends State<PlannerPage> {
                             fontSize: constraints.maxWidth < 600 ? 32 : 46,
                             fontWeight: FontWeight.w800,
                             height: 1.15,
-                            color: forest,
+                            color: ink,
                           ),
                         ),
                       ),
@@ -283,7 +306,7 @@ class _PlannerPageState extends State<PlannerPage> {
                             liveRegion: true,
                             child: Text(
                               _warning,
-                              style: const TextStyle(color: Colors.brown),
+                              style: const TextStyle(color: ink),
                             ),
                           ),
                         ),
@@ -291,7 +314,7 @@ class _PlannerPageState extends State<PlannerPage> {
                         padding: EdgeInsets.symmetric(vertical: 28),
                         child: Text(
                           'План и результаты сохраняются на этом устройстве. Демонстрационный план можно редактировать.',
-                          style: TextStyle(fontSize: 12, color: Colors.grey),
+                          style: TextStyle(fontSize: 12, color: ink),
                         ),
                       ),
                     ],
@@ -395,11 +418,11 @@ class _PlannerPageState extends State<PlannerPage> {
   Widget _tips(TrainingPlan plan) => Column(
     children: [
       const Panel(
-        color: Color(0xffe8efdb),
+        color: brightYellow,
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Icon(Icons.spa_outlined, size: 36, color: forest),
+            Icon(Icons.spa_outlined, size: 36, color: ink),
             SizedBox(height: 20),
             Text(
               'Главное — регулярность',
@@ -440,7 +463,7 @@ class _PlannerPageState extends State<PlannerPage> {
 }
 
 class Panel extends StatelessWidget {
-  const Panel({super.key, required this.child, this.color = Colors.white});
+  const Panel({super.key, required this.child, this.color = brightYellow});
   final Widget child;
   final Color color;
   @override
@@ -450,7 +473,7 @@ class Panel extends StatelessWidget {
     decoration: BoxDecoration(
       color: color,
       borderRadius: BorderRadius.circular(20),
-      border: Border.all(color: const Color(0xffe1e6dd)),
+      border: Border.all(color: ink),
     ),
     child: child,
   );
@@ -471,7 +494,7 @@ class StatTile extends StatelessWidget {
           value,
           style: const TextStyle(
             fontSize: 28,
-            color: forest,
+            color: ink,
             fontWeight: FontWeight.bold,
           ),
         ),
@@ -533,14 +556,14 @@ class ExerciseTile extends StatelessWidget {
                         const Icon(
                           Icons.edit_outlined,
                           size: 16,
-                          color: forest,
+                          color: ink,
                         ),
                       ],
                     ),
                     const SizedBox(height: 5),
                     Text(
                       'Подходов: ${exercise.sets}',
-                      style: const TextStyle(fontSize: 13, color: Colors.grey),
+                      style: const TextStyle(fontSize: 13, color: ink),
                     ),
                   ],
                 ),
