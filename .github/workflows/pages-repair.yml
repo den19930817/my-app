@@ -1,0 +1,46 @@
+name: Verify and repair Pages publication
+on:
+  push:
+    branches: [main]
+    paths: [.github/workflows/pages-repair.yml]
+  workflow_dispatch:
+permissions:
+  contents: write
+  pages: write
+jobs:
+  repair:
+    runs-on: ubuntu-latest
+    timeout-minutes: 6
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+      - name: Inspect and repair live Pages
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -o pipefail
+          {
+            gh api "repos/$GITHUB_REPOSITORY/pages" --jq '{html_url,build_type,source,status}'
+            gh api --method PUT "repos/$GITHUB_REPOSITORY/pages" -f build_type=legacy -f 'source[branch]=gh-pages' -f 'source[path]=/'
+            gh api --method POST "repos/$GITHUB_REPOSITORY/pages/builds"
+            for attempt in 1 2 3 4 5 6; do
+              sleep 15
+              gh api "repos/$GITHUB_REPOSITORY/pages/builds/latest" --jq '{status,error,commit}'
+              curl --fail --silent --show-error --max-time 20 "https://den19930817.github.io/my-app/source-revision.txt?verify=$GITHUB_SHA"
+              curl --fail --silent --show-error --max-time 20 "https://den19930817.github.io/my-app/?verify=$GITHUB_SHA" | head -c 3000
+            done
+          } 2>&1 | tee "$RUNNER_TEMP/pages-report.txt"
+      - name: Save diagnostic report
+        if: always()
+        run: |
+          if git fetch origin pages-repair-report; then
+            git checkout -B pages-repair-report FETCH_HEAD
+          else
+            git checkout --orphan pages-repair-report
+          fi
+          git rm -rf --ignore-unmatch .
+          cp "$RUNNER_TEMP/pages-report.txt" pages-report.txt
+          git add pages-report.txt
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git commit -m "Pages publication report $GITHUB_SHA"
+          git push origin HEAD:pages-repair-report

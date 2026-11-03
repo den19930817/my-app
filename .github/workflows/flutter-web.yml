@@ -5,6 +5,7 @@ on:
   workflow_dispatch:
 permissions:
   contents: write
+  pages: write
 concurrency:
   group: flutter-web
   cancel-in-progress: true
@@ -31,6 +32,8 @@ jobs:
             flutter test &&
             flutter build web --release --base-href /my-app/ --no-web-resources-cdn --pwa-strategy=none
           } 2>&1 | tee "$RUNNER_TEMP/flutter-checks.log"
+      - name: Version web entry points
+        run: python3 scripts/version_web_build.py build/web "$GITHUB_SHA"
       - name: Check out existing Pages branch
         uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
         with:
@@ -60,6 +63,10 @@ jobs:
           git -C published add -A
           git -C published commit -m "Build Flutter Web from $SOURCE_SHA"
           git -C published push origin HEAD:gh-pages
+      - name: Trigger Pages build after publishing
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: gh api --method POST "repos/$GITHUB_REPOSITORY/pages/builds"
       - name: Check out CI report workspace
         if: always()
         uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
