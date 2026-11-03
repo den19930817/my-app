@@ -1,7 +1,7 @@
 name: Verify and repair Pages publication
 on:
   push:
-    branches: [main]
+    branches: [main, pages-live-check]
     paths: [.github/workflows/pages-repair.yml]
   workflow_dispatch:
 permissions:
@@ -24,9 +24,9 @@ jobs:
             if test "$branch" != gh-pages; then
               gh api --method PUT "repos/$GITHUB_REPOSITORY/pages" -f build_type=legacy -f 'source[branch]=gh-pages' -f 'source[path]=/'
             fi
-            gh api --method POST "repos/$GITHUB_REPOSITORY/pages/builds"
-            for attempt in 1 2 3 4 5 6; do
-              sleep 15
+            gh api "repos/$GITHUB_REPOSITORY/pages/builds/latest" --jq '{status,error,commit}'
+            for attempt in 1 2 3; do
+              sleep 5
               gh api "repos/$GITHUB_REPOSITORY/pages/builds/latest" --jq '{status,error,commit}'
               curl --fail --silent --show-error --max-time 20 "https://den19930817.github.io/my-app/source-revision.txt?verify=$GITHUB_SHA" || true
               curl --fail --silent --show-error --max-time 20 "https://den19930817.github.io/my-app/?verify=$GITHUB_SHA" | head -c 3000 || true
